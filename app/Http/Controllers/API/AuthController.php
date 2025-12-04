@@ -5,6 +5,7 @@ namespace App\Http\Controllers\API;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 
 class AuthController extends Controller
@@ -51,6 +52,68 @@ class AuthController extends Controller
         return response()->json([
             'status' => 'Success',
             'message' => 'User registered successfully'
+        ]);
+    }
+
+
+    //login function will be here
+
+    public function login(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'email' => 'required|email',
+            'password' => 'required'
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'status' => 'Failed',
+                'errors' => $validator->errors()
+            ]);
+        }
+
+        if (!Auth::attempt([
+            'email' => $request->email,
+            'password' => $request->password
+
+        ])) {
+            return response()->json([
+                'status' => 'Failed',
+                'message' => 'Invalid credentials'
+            ]);
+        }
+
+        $user = Auth::user();
+
+        //sanctum token generation
+
+        $token = $user->createToken('Apitesting')->plainTextToken;
+
+        return response()->json([
+            'status' => 'Success',
+            'message' => 'Login successful',
+            'token' => $token,
+            'user' => $user
+
+        ]);
+    }
+
+    public function profile(Request $request)
+    {
+        $user = Auth::user();
+        return response()->json([
+            'status' => 'Succes',
+            'user' => $user
+        ]);
+    }
+
+    public function logout(Request $request)
+    {
+        $user = Auth::user();
+        $user->tokens()->delete();
+        return response()->json([
+            'status' => 'Success',
+            'message' => 'Logged out successfully'
         ]);
     }
 }
