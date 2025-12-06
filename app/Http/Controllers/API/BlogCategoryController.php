@@ -67,7 +67,33 @@ class BlogCategoryController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        //
+        $validator = Validator::make($request->all(), [
+            'name' => 'required'
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'status' => 'Failed',
+                'errors' => $validator->errors()
+            ]);
+        }
+
+        $category = BlogCategory::find($id);
+        if ($category) {
+            $category['name'] = $request->name;
+            $category['slug'] = $request->slug;
+            $category->save();
+
+            return response()->json([
+                'status' => 'Success',
+                'message' => 'Category updated successfully'
+            ]);
+        } else {
+            return response()->json([
+                'status' => 'Failed',
+                'message' => 'Category not found'
+            ], 404);
+        }
     }
 
     /**

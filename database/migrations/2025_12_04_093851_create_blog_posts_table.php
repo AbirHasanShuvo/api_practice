@@ -13,6 +13,15 @@ return new class extends Migration
     {
         Schema::create('blog_posts', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
+            $table->foreignId('category_id')->constrained('blog_categories')->onDelete('cascade');
+            $table->string('title');
+            $table->string('slug');
+            $table->longText('content');
+            $table->string('excerpt')->nullable();
+            $table->string('thumbnail')->nullable();
+            $table->enum('status', ['draft', 'published', 'archieved'])->default('draft');
+            $table->datetime('published_at');
             $table->timestamps();
         });
     }
