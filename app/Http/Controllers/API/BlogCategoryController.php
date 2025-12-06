@@ -3,7 +3,10 @@
 namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
+use App\Models\BlogCategory;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Str;
 
 class BlogCategoryController extends Controller
 {
@@ -12,7 +15,14 @@ class BlogCategoryController extends Controller
      */
     public function index()
     {
-        //
+        $categories = BlogCategory::all();
+        return response()->json([
+            'status' => 'Success',
+            'count' => count($categories),
+            'data' => $categories
+
+
+        ]);
     }
 
     /**
@@ -20,7 +30,28 @@ class BlogCategoryController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $validator = Validator::make($request->all(), [
+            'name' => 'required'
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'status' => 'Failed',
+                'errors' => $validator->errors()
+            ]);
+        }
+
+        $data['name'] = $request->name;
+        $data['slug'] = Str::slug($request->slug);
+
+        BlogCategory::create($data);
+
+        return response()->json(
+            [
+                'status' => 'Success',
+                'message' => 'Blog category created successfully'
+            ]
+        );
     }
 
     /**
