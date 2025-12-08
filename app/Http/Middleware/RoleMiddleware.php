@@ -17,10 +17,10 @@ class RoleMiddleware
     public function handle(Request $request, Closure $next, ...$roles): Response
     {
         if (!Auth::check()) {
-            return response()->json(
-                ['status' => 'Failed', 'message' => 'Un-authorised access'],
-                status: 403
-            );
+            return response()->json([
+                'status' => 'Failed',
+                'message' => 'Un-authorised access'
+            ], 403);
         }
 
         // Split roles if they were passed as a single string with |

@@ -18,4 +18,9 @@ class BlogPost extends Model
         'published_at'
 
     ];
+
+    public function seo()
+    {
+        return $this->hasOne(Seo::class, 'post_id');
+    }
 }
