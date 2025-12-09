@@ -3,8 +3,8 @@
 use App\Http\Controllers\API\AuthController;
 use App\Http\Controllers\API\BlogCategoryController;
 use App\Http\Controllers\API\BlogPostController;
-use App\Models\BlogCategory;
-use Illuminate\Http\Request;
+use App\Http\Controllers\API\CommentController;
+use Dom\Comment;
 use Illuminate\Support\Facades\Route;
 
 Route::post('/register', [AuthController::class, 'register']);
@@ -21,6 +21,12 @@ Route::middleware('auth:sanctum')->group(function () {
 
     //for post API
     Route::apiResource('posts', BlogPostController::class)->middleware('role:admin|author');
+
+    //for creating comments
+    Route::get('comments', [CommentController::class, 'index'])->name('index')->middleware(['role:admin']);
+    // Route::post();
+    Route::post('comments/change-status', [CommentController::class, 'changeStatus'])->name('changeStatus')->middleware('role:admin');
+    Route::apiResource('comments', CommentController::class);
 });
 
 Route::get('categories', [BlogCategoryController::class, 'index']);
